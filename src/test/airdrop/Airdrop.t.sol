@@ -1,14 +1,50 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import { Airdrop } from "contracts/prebuilts/unaudited/airdrop/Airdrop.sol";
+import { Airdrop, ECDSA } from "contracts/prebuilts/unaudited/airdrop/Airdrop.sol";
 
 // Test imports
 import { TWProxy } from "contracts/infra/TWProxy.sol";
 import "../utils/BaseTest.sol";
 
+contract MockSmartWallet {
+    using ECDSA for bytes32;
+
+    bytes4 private constant EIP1271_MAGIC_VALUE = 0x1626ba7e;
+    address private admin;
+
+    constructor(address _admin) {
+        admin = _admin;
+    }
+
+    function isValidSignature(bytes32 _hash, bytes memory _signature) public view returns (bytes4) {
+        if (_hash.recover(_signature) == admin) {
+            return EIP1271_MAGIC_VALUE;
+        }
+    }
+
+    function onERC721Received(address, address, uint256, bytes memory) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function onERC1155Received(address, address, uint256, uint256, bytes memory) external pure returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) external pure returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+}
+
 contract AirdropTest is BaseTest {
     Airdrop internal airdrop;
+    MockSmartWallet internal mockSmartWallet;
 
     bytes32 private constant CONTENT_TYPEHASH_ERC20 =
         keccak256("AirdropContentERC20(address recipient,uint256 amount)");
@@ -48,6 +84,8 @@ contract AirdropTest is BaseTest {
         domainSeparator = keccak256(
             abi.encode(TYPE_HASH_EIP712, NAME_HASH, VERSION_HASH, block.chainid, address(airdrop))
         );
+
+        mockSmartWallet = new MockSmartWallet(signer);
     }
 
     function _getContentsERC20(uint256 length) internal pure returns (Airdrop.AirdropContentERC20[] memory contents) {
@@ -272,6 +310,62 @@ contract AirdropTest is BaseTest {
         assertEq(erc20.balanceOf(signer), 100 ether - totalAmount);
     }
 
+    function test_state_airdropSignature_erc20_eip1271() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc20.mint(address(mockSmartWallet), 100 ether);
+        vm.prank(address(mockSmartWallet));
+        erc20.approve(address(airdrop), 100 ether);
+
+        Airdrop.AirdropContentERC20[] memory contents = _getContentsERC20(10);
+        Airdrop.AirdropRequestERC20 memory req = Airdrop.AirdropRequestERC20({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc20),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with original EOA signer private key
+        bytes memory signature = _signReqERC20(req, privateKey);
+
+        airdrop.airdropERC20WithSignature(req, signature);
+
+        uint256 totalAmount;
+        for (uint256 i = 0; i < contents.length; i++) {
+            totalAmount += contents[i].amount;
+            assertEq(erc20.balanceOf(contents[i].recipient), contents[i].amount);
+        }
+        assertEq(erc20.balanceOf(address(mockSmartWallet)), 100 ether - totalAmount);
+    }
+
+    function test_revert_airdropSignature_erc20_eip1271_invalidSignature() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc20.mint(address(mockSmartWallet), 100 ether);
+        vm.prank(address(mockSmartWallet));
+        erc20.approve(address(airdrop), 100 ether);
+
+        Airdrop.AirdropContentERC20[] memory contents = _getContentsERC20(10);
+        Airdrop.AirdropRequestERC20 memory req = Airdrop.AirdropRequestERC20({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc20),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with random private key
+        bytes memory signature = _signReqERC20(req, 123);
+
+        vm.expectRevert(abi.encodeWithSelector(Airdrop.AirdropRequestInvalidSigner.selector));
+        airdrop.airdropERC20WithSignature(req, signature);
+    }
+
     function test_revert_airdropSignature_erc20_expired() public {
         erc20.mint(signer, 100 ether);
         vm.prank(signer);
@@ -490,6 +584,59 @@ contract AirdropTest is BaseTest {
         }
     }
 
+    function test_state_airdropSignature_erc721_eip1271() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc721.mint(address(mockSmartWallet), 1000);
+        vm.prank(address(mockSmartWallet));
+        erc721.setApprovalForAll(address(airdrop), true);
+
+        Airdrop.AirdropContentERC721[] memory contents = _getContentsERC721(10);
+        Airdrop.AirdropRequestERC721 memory req = Airdrop.AirdropRequestERC721({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc721),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with original EOA signer private key
+        bytes memory signature = _signReqERC721(req, privateKey);
+
+        airdrop.airdropERC721WithSignature(req, signature);
+
+        for (uint256 i = 0; i < contents.length; i++) {
+            assertEq(erc721.ownerOf(contents[i].tokenId), contents[i].recipient);
+        }
+    }
+
+    function test_revert_airdropSignature_erc721_eip1271_invalidSignature() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc721.mint(address(mockSmartWallet), 1000);
+        vm.prank(address(mockSmartWallet));
+        erc721.setApprovalForAll(address(airdrop), true);
+
+        Airdrop.AirdropContentERC721[] memory contents = _getContentsERC721(10);
+        Airdrop.AirdropRequestERC721 memory req = Airdrop.AirdropRequestERC721({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc721),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with random private key
+        bytes memory signature = _signReqERC721(req, 123);
+
+        vm.expectRevert(abi.encodeWithSelector(Airdrop.AirdropRequestInvalidSigner.selector));
+        airdrop.airdropERC721WithSignature(req, signature);
+    }
+
     function test_revert_airdropSignature_erc721_expired() public {
         erc721.mint(signer, 1000);
         vm.prank(signer);
@@ -702,6 +849,59 @@ contract AirdropTest is BaseTest {
         for (uint256 i = 0; i < contents.length; i++) {
             assertEq(erc1155.balanceOf(contents[i].recipient, contents[i].tokenId), contents[i].amount);
         }
+    }
+
+    function test_state_airdropSignature_erc1155_eip1271() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc1155.mint(address(mockSmartWallet), 0, 100 ether);
+        vm.prank(address(mockSmartWallet));
+        erc1155.setApprovalForAll(address(airdrop), true);
+
+        Airdrop.AirdropContentERC1155[] memory contents = _getContentsERC1155(10);
+        Airdrop.AirdropRequestERC1155 memory req = Airdrop.AirdropRequestERC1155({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc1155),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with original EOA signer private key
+        bytes memory signature = _signReqERC1155(req, privateKey);
+
+        airdrop.airdropERC1155WithSignature(req, signature);
+
+        for (uint256 i = 0; i < contents.length; i++) {
+            assertEq(erc1155.balanceOf(contents[i].recipient, contents[i].tokenId), contents[i].amount);
+        }
+    }
+
+    function test_revert_airdropSignature_erc1155_eip1271_invalidSignature() public {
+        // set mockSmartWallet as contract owner
+        vm.prank(signer);
+        airdrop.setOwner(address(mockSmartWallet));
+
+        // mint tokens to mockSmartWallet
+        erc1155.mint(address(mockSmartWallet), 0, 100 ether);
+        vm.prank(address(mockSmartWallet));
+        erc1155.setApprovalForAll(address(airdrop), true);
+
+        Airdrop.AirdropContentERC1155[] memory contents = _getContentsERC1155(10);
+        Airdrop.AirdropRequestERC1155 memory req = Airdrop.AirdropRequestERC1155({
+            uid: bytes32(uint256(1)),
+            tokenAddress: address(erc1155),
+            expirationTimestamp: 1000,
+            contents: contents
+        });
+
+        // sign with random private key
+        bytes memory signature = _signReqERC1155(req, 123);
+
+        vm.expectRevert(abi.encodeWithSelector(Airdrop.AirdropRequestInvalidSigner.selector));
+        airdrop.airdropERC1155WithSignature(req, signature);
     }
 
     function test_revert_airdropSignature_erc115_expired() public {
