@@ -49,8 +49,9 @@ abstract contract Drop is IDrop {
         verifyClaim(activeConditionId, _dropMsgSender(), _quantity, _currency, _pricePerToken, _allowlistProof);
 
         // Update contract state.
+        bytes32 activeConditionHash = _dropStorage().claimCondition.conditionHash[activeConditionId];
         _dropStorage().claimCondition.conditions[activeConditionId].supplyClaimed += _quantity;
-        _dropStorage().claimCondition.supplyClaimedByWallet[activeConditionId][_dropMsgSender()] += _quantity;
+        _dropStorage().claimCondition.supplyClaimedByWallet[activeConditionHash][_dropMsgSender()] += _quantity;
 
         // If there's a price, collect price.
         _collectPriceOnClaim(address(0), _quantity, _currency, _pricePerToken);
@@ -102,6 +103,13 @@ abstract contract Drop is IDrop {
             _dropStorage().claimCondition.conditions[newStartIndex + i] = _conditions[i];
             _dropStorage().claimCondition.conditions[newStartIndex + i].supplyClaimed = supplyClaimedAlready;
 
+            bytes32 _conditionHash = _dropStorage().claimCondition.conditionHash[newStartIndex + i];
+            if (_resetClaimEligibility || _conditionHash == bytes32(0)) {
+                _dropStorage().claimCondition.conditionHash[newStartIndex + i] = keccak256(
+                    abi.encodePacked((newStartIndex + i), block.number)
+                );
+            }
+
             lastConditionStartTimestamp = _conditions[i].startTimestamp;
         }
 
@@ -118,11 +126,13 @@ abstract contract Drop is IDrop {
         if (_resetClaimEligibility) {
             for (uint256 i = existingStartIndex; i < newStartIndex; i++) {
                 delete _dropStorage().claimCondition.conditions[i];
+                delete _dropStorage().claimCondition.conditionHash[i];
             }
         } else {
             if (existingPhaseCount > _conditions.length) {
                 for (uint256 i = _conditions.length; i < existingPhaseCount; i++) {
                     delete _dropStorage().claimCondition.conditions[newStartIndex + i];
+                    delete _dropStorage().claimCondition.conditionHash[newStartIndex + i];
                 }
             }
         }
@@ -140,6 +150,7 @@ abstract contract Drop is IDrop {
         AllowlistProof calldata _allowlistProof
     ) public view virtual returns (bool isOverride) {
         ClaimCondition memory currentClaimPhase = _dropStorage().claimCondition.conditions[_conditionId];
+        bytes32 activeConditionHash = _dropStorage().claimCondition.conditionHash[_conditionId];
         uint256 claimLimit = currentClaimPhase.quantityLimitPerWallet;
         uint256 claimPrice = currentClaimPhase.pricePerToken;
         address claimCurrency = currentClaimPhase.currency;
@@ -175,7 +186,9 @@ abstract contract Drop is IDrop {
                 : claimCurrency;
         }
 
-        uint256 supplyClaimedByWallet = _dropStorage().claimCondition.supplyClaimedByWallet[_conditionId][_claimer];
+        uint256 supplyClaimedByWallet = _dropStorage().claimCondition.supplyClaimedByWallet[activeConditionHash][
+            _claimer
+        ];
 
         if (_currency != claimCurrency || _pricePerToken != claimPrice) {
             revert("!PriceOrCurrency");
@@ -218,7 +231,8 @@ abstract contract Drop is IDrop {
         uint256 _conditionId,
         address _claimer
     ) public view returns (uint256 supplyClaimedByWallet) {
-        supplyClaimedByWallet = _dropStorage().claimCondition.supplyClaimedByWallet[_conditionId][_claimer];
+        bytes32 _conditionHash = _dropStorage().claimCondition.conditionHash[_conditionId];
+        supplyClaimedByWallet = _dropStorage().claimCondition.supplyClaimedByWallet[_conditionHash][_claimer];
     }
 
     /*////////////////////////////////////////////////////////////////////

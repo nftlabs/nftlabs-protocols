@@ -69,8 +69,9 @@ abstract contract Drop1155 is IDrop1155 {
         );
 
         // Update contract state.
+        bytes32 activeConditionHash = claimCondition[_tokenId].conditionHash[activeConditionId];
         claimCondition[_tokenId].conditions[activeConditionId].supplyClaimed += _quantity;
-        claimCondition[_tokenId].supplyClaimedByWallet[activeConditionId][_dropMsgSender()] += _quantity;
+        claimCondition[_tokenId].supplyClaimedByWallet[activeConditionHash][_dropMsgSender()] += _quantity;
 
         // If there's a price, collect price.
         collectPriceOnClaim(_tokenId, address(0), _quantity, _currency, _pricePerToken);
@@ -123,6 +124,13 @@ abstract contract Drop1155 is IDrop1155 {
             conditionList.conditions[newStartIndex + i] = _conditions[i];
             conditionList.conditions[newStartIndex + i].supplyClaimed = supplyClaimedAlready;
 
+            bytes32 _conditionHash = conditionList.conditionHash[newStartIndex + i];
+            if (_resetClaimEligibility || _conditionHash == bytes32(0)) {
+                conditionList.conditionHash[newStartIndex + i] = keccak256(
+                    abi.encodePacked((newStartIndex + i), block.number)
+                );
+            }
+
             lastConditionStartTimestamp = _conditions[i].startTimestamp;
         }
 
@@ -139,11 +147,13 @@ abstract contract Drop1155 is IDrop1155 {
         if (_resetClaimEligibility) {
             for (uint256 i = existingStartIndex; i < newStartIndex; i++) {
                 delete conditionList.conditions[i];
+                delete conditionList.conditionHash[i];
             }
         } else {
             if (existingPhaseCount > _conditions.length) {
                 for (uint256 i = _conditions.length; i < existingPhaseCount; i++) {
                     delete conditionList.conditions[newStartIndex + i];
+                    delete conditionList.conditionHash[newStartIndex + i];
                 }
             }
         }
@@ -162,6 +172,7 @@ abstract contract Drop1155 is IDrop1155 {
         AllowlistProof calldata _allowlistProof
     ) public view virtual returns (bool isOverride) {
         ClaimCondition memory currentClaimPhase = claimCondition[_tokenId].conditions[_conditionId];
+        bytes32 activeConditionHash = claimCondition[_tokenId].conditionHash[_conditionId];
         uint256 claimLimit = currentClaimPhase.quantityLimitPerWallet;
         uint256 claimPrice = currentClaimPhase.pricePerToken;
         address claimCurrency = currentClaimPhase.currency;
@@ -197,7 +208,7 @@ abstract contract Drop1155 is IDrop1155 {
                 : claimCurrency;
         }
 
-        uint256 supplyClaimedByWallet = claimCondition[_tokenId].supplyClaimedByWallet[_conditionId][_claimer];
+        uint256 supplyClaimedByWallet = claimCondition[_tokenId].supplyClaimedByWallet[activeConditionHash][_claimer];
 
         if (_currency != claimCurrency || _pricePerToken != claimPrice) {
             revert DropClaimInvalidTokenPrice(_currency, _pricePerToken, claimCurrency, claimPrice);
@@ -245,7 +256,8 @@ abstract contract Drop1155 is IDrop1155 {
         uint256 _conditionId,
         address _claimer
     ) public view returns (uint256 supplyClaimedByWallet) {
-        supplyClaimedByWallet = claimCondition[_tokenId].supplyClaimedByWallet[_conditionId][_claimer];
+        bytes32 _conditionHash = claimCondition[_tokenId].conditionHash[_conditionId];
+        supplyClaimedByWallet = claimCondition[_tokenId].supplyClaimedByWallet[_conditionHash][_claimer];
     }
 
     /*////////////////////////////////////////////////////////////////////

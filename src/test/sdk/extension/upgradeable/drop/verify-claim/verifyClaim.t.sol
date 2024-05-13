@@ -31,10 +31,14 @@ contract MyDropUpg is Drop {
 
     function setCondition(ClaimCondition calldata condition, uint256 _conditionId) public {
         _dropStorage().claimCondition.conditions[_conditionId] = condition;
+        _dropStorage().claimCondition.conditionHash[_conditionId] = keccak256(
+            abi.encodePacked(_conditionId, block.number)
+        );
     }
 
     function setSupplyClaimedByWallet(uint256 _conditionId, address _wallet, uint256 _supplyClaimed) public {
-        _dropStorage().claimCondition.supplyClaimedByWallet[_conditionId][_wallet] = _supplyClaimed;
+        bytes32 _conditionHash = keccak256(abi.encodePacked(_conditionId, block.number));
+        _dropStorage().claimCondition.supplyClaimedByWallet[_conditionHash][_wallet] = _supplyClaimed;
     }
 }
 

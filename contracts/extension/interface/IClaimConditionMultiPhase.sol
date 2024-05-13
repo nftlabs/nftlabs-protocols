@@ -25,15 +25,19 @@ interface IClaimConditionMultiPhase is IClaimCondition {
      *  @param count                    The total number of phases / claim conditions in the list
      *                                  of claim conditions.
      *
+     * @param conditionHash             Mapping from numeric claim condition ID to a unique hash.
+     *                                  Used in supplyClaimedByWallet mapping below.
+     *
      *  @param conditions                   The claim conditions at a given uid. Claim conditions
      *                                  are ordered in an ascending order by their `startTimestamp`.
      *
-     *  @param supplyClaimedByWallet    Map from a claim condition uid and account to supply claimed by account.
+     *  @param supplyClaimedByWallet    Map from a claim condition uid/hash and account to supply claimed by account.
      */
     struct ClaimConditionList {
         uint256 currentStartId;
         uint256 count;
+        mapping(uint256 => bytes32) conditionHash;
         mapping(uint256 => ClaimCondition) conditions;
-        mapping(uint256 => mapping(address => uint256)) supplyClaimedByWallet;
+        mapping(bytes32 => mapping(address => uint256)) supplyClaimedByWallet;
     }
 }

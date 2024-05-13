@@ -8,16 +8,20 @@ artifacts/build-info
 build/
 scripts/reference-scripts
 cache/
+cache_hardhat/
+cache_hardhat-zk/
 coverage/
 dist/
 node_modules/
 typechain/
+typechain-types/
 .parcel-cache/
 
 abi/
 contracts/abi/
 contracts/README.md
 artifacts/
+artifacts-zk/
 artifacts_forge/
 contract_artifacts/
 
