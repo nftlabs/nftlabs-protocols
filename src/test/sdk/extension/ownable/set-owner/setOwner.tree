@@ -1,6 +1,0 @@
-setContractURI(string memory uri)
-├── when caller not authorized
-  │  └── it should revert ✅
-  └── when caller is authorized
-     └── it should update owner by replacing old owner with the new owner input ✅
-     └── it should emit OwnerUpdated event ✅

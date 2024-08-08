@@ -1,9 +1,0 @@
-contractType()
-├── it should return bytes32("VoteERC20") ✅
-
-contractVersion()
-├── it should return uint8(1) ✅
-
-supportsInterface(bytes4 interfaceId)
-├── it should return true for supported interface ✅
-├── it should return false for not supported interface ✅

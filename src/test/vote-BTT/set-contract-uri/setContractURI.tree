@@ -1,8 +1,0 @@
-setContractURI(string calldata uri)
-├── when caller is not authorized (i.e. execution not going through governance proposals)
-  │  └── it should revert ✅
-  └── when caller is authorized (execution through governance proposals) 
-      └── when `uri` is empty
-      │   └── it should update contract URI to empty string ✅
-      └── when `uri` is not empty
-          └── it should update contract URI to `uri` ✅

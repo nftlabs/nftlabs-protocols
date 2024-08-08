@@ -1,6 +1,0 @@
-_freezeBaseURI(uint256 _batchId)
-├── when there is no baseURI for given `_batchId`
-  │  └── it should revert ✅
-  └── when there is a baseURI present for given `_batchId`
-       └── it should freeze the `batchId` by setting `frozen[_batchId]` to `true` ✅
-       └── it should emit MetadataFrozen event ✅

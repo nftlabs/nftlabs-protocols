@@ -1,8 +1,0 @@
-setFlatPlatformFeeInfo(address _platformFeeRecipient, uint256 _flatFee)
-├── when caller not authorized
-  │  └── it should revert ✅
-  └── when caller is authorized
-      └── when `_platformFeeBps` is less than or equal to MAX_BPS
-            └── it should update platform fee recipient ✅
-            └── it should update flatPlatformFee ✅
-            └── it should emit FlatPlatformFeeUpdated event ✅

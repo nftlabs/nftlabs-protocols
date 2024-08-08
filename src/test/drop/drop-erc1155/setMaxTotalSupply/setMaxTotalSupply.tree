@@ -1,6 +1,0 @@
-function setMaxTotalSupply(uint256 _tokenId, uint256 _maxTotalSupply)
-├── when the caller does not have DEFAULT_ADMIN_ROLE
-│   └── it should revert ✅
-└── when the caller does have DEFAULT_ADMIN_ROLE
-    ├── it should set maxTotalSupply for _tokenId as _maxTotalSupply ✅
-    └── it should emit MaxTotalSupplyUpdated with the parameters _tokenId, _maxTotalSupply ✅

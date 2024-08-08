@@ -1,9 +1,0 @@
-function updateBatchBaseURI(uint256 _index, string calldata _uri)
-├── when the caller does not have metadataRole
-│   └── it should revert ✅
-└── when the caller has metadataRole
-    ├── when batchFrozen[_batchId for _index] is equal to true
-    │   └── it should revert ✅
-    └── when batchFrozen[_batchId for _index] is equal to false
-        ├── it should set baseURI[_batchId for _index] to _uri ✅
-        └── it should emit BatchMetadataUpdate with the parameters startingTokenId, _batchId ✅

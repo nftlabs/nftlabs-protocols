@@ -1,9 +1,0 @@
-function _transferAuctionTokens(
-    address _from,
-    address _to,
-    Auction memory _auction
-)
-├── when the token is ERC1155
-│   └── it should transfer ERC1155 tokens from the specified owner to recipient
-└── when the token is ERC721
-    └── it should transfer ERC721 tokens from the specified owner to recipient

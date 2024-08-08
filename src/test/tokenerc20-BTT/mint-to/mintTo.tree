@@ -1,7 +1,0 @@
-mintTo(address to, uint256 amount)
-├── when caller doesn't have MINTER_ROLE
-  │  └── it should revert ✅
-  └── when caller has MINTER_ROLE
-     └── it should mint `amount` to `to` ✅
-     └── it should emit TokensMinted event ✅
-

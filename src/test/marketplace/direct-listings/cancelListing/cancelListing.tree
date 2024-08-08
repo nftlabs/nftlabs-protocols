@@ -1,9 +1,0 @@
-function cancelListing(uint256 _listingId)
-├── when no listing with the given listing ID exists
-│   └── it should revert ✅
-└── when listing with the given listing ID exists
-    ├── when the caller is not listing creator
-    │   └── it should revert ✅
-    └── when the caller is listing creator ✅
-        ├── it should set status of listing as cancelled
-        └── it should emit CancelledListing event

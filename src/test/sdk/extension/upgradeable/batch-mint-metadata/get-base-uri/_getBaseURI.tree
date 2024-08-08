@@ -1,6 +1,0 @@
-_getBaseURI(uint256 _tokenId)
-├── when `_tokenId` doesn't belong to any batch, i.e. greater than the last batchId
-  │  └── it should revert ✅
-  └── when `_tokenId` belongs to some batch, i.e. less than that batchId
-          └── it should return correct baseURI for the `_tokenId` ✅
-(note: all batches are assumed to be contiguous, i.e. start id of one batch is the end id of the previous batch)

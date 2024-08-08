@@ -70,7 +70,7 @@ abstract contract Router is Multicall, ERC165, IRouter {
         _delegate(_pluginAddress);
     }
 
-    receive() external payable {}
+    receive() external payable virtual {}
 
     function _delegate(address implementation) internal virtual {
         assembly {

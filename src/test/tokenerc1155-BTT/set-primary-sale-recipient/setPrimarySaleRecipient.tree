@@ -1,6 +1,0 @@
-setPrimarySaleRecipient(address _saleRecipient)
-├── when caller not authorized
-  │  └── it should revert ✅
-  └── when caller is authorized
-      └── it should update primary sale recipient ✅
-      └── it should emit PrimarySaleRecipientUpdated event ✅

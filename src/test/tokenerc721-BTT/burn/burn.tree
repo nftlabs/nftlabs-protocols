@@ -1,8 +1,0 @@
-burn(uint256 tokenId)
-├── when the caller isn't the owner of `tokenId` or token not approved to caller
-│   └── it should revert ✅
-└── when the caller owns `tokenId`
-│   └── it should burn the token ✅
-└── when the `tokenId` is approved to caller
-    └── it should burn the token ✅
-

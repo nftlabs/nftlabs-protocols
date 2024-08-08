@@ -1,7 +1,0 @@
-_batchMintMetadata(
-    uint256 _startId,
-    uint256 _amountToMint,
-    string memory _baseURIForTokens
-)
-├── it should store batch id equal to the sum of `_startId` and `_amountToMint` in batchIds array ✅
-├── it should map the new batch id to `_baseURIForTokens` ✅

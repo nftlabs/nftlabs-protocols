@@ -20,10 +20,8 @@ import { ERC721Holder } from "@openzeppelin/contracts/token/ERC721/utils/ERC721H
 import { ERC1155Holder, ERC1155Receiver } from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 //  ==========  Internal imports    ==========
-import { BaseRouter, IRouter, IRouterState } from "@thirdweb-dev/dynamic-contracts/src/presets/BaseRouter.sol";
-import { ERC165 } from "../../../eip/ERC165.sol";
+import { Router, Multicall } from "../../../extension/plugin/Router.sol";
 
-import "../../../extension/Multicall.sol";
 import "../../../extension/upgradeable/Initializable.sol";
 import "../../../extension/upgradeable/ContractMetadata.sol";
 import "../../../extension/upgradeable/PlatformFee.sol";
@@ -37,8 +35,6 @@ import { RoyaltyPaymentsLogic } from "../../../extension/upgradeable/RoyaltyPaym
  */
 contract MarketplaceV3 is
     Initializable,
-    Multicall,
-    BaseRouter,
     ContractMetadata,
     PlatformFee,
     PermissionsEnumerable,
@@ -47,7 +43,7 @@ contract MarketplaceV3 is
     RoyaltyPaymentsLogic,
     ERC721Holder,
     ERC1155Holder,
-    ERC165
+    Router
 {
     /// @dev Only EXTENSION_ROLE holders can perform upgrades.
     bytes32 private constant EXTENSION_ROLE = keccak256("EXTENSION_ROLE");
@@ -62,21 +58,16 @@ contract MarketplaceV3 is
                     Constructor + initializer logic
     //////////////////////////////////////////////////////////////*/
 
-    /// @dev We accept constructor params as a struct to avoid `Stack too deep` errors.
-    struct MarketplaceConstructorParams {
-        Extension[] extensions;
-        address royaltyEngineAddress;
-        address nativeTokenWrapper;
-    }
-
     constructor(
-        MarketplaceConstructorParams memory _marketplaceV3Params
-    ) BaseRouter(_marketplaceV3Params.extensions) RoyaltyPaymentsLogic(_marketplaceV3Params.royaltyEngineAddress) {
-        nativeTokenWrapper = _marketplaceV3Params.nativeTokenWrapper;
+        address _pluginMap,
+        address _royaltyEngineAddress,
+        address _nativeTokenWrapper
+    ) Router(_pluginMap) RoyaltyPaymentsLogic(_royaltyEngineAddress) {
+        nativeTokenWrapper = _nativeTokenWrapper;
         _disableInitializers();
     }
 
-    receive() external payable {
+    receive() external payable override {
         assert(msg.sender == nativeTokenWrapper); // only accept ETH via fallback from the native token wrapper contract
     }
 
@@ -88,9 +79,6 @@ contract MarketplaceV3 is
         address _platformFeeRecipient,
         uint16 _platformFeeBps
     ) external initializer {
-        // Initialize BaseRouter
-        __BaseRouter_init();
-
         // Initialize inherited contracts, most base-like -> most derived.
         __ReentrancyGuard_init();
         __ERC2771Context_init(_trustedForwarders);
@@ -128,12 +116,10 @@ contract MarketplaceV3 is
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC165, IERC165, ERC1155Receiver) returns (bool) {
+    ) public view virtual override(Router, IERC165, ERC1155Receiver) returns (bool) {
         return
             interfaceId == type(IERC1155Receiver).interfaceId ||
             interfaceId == type(IERC721Receiver).interfaceId ||
-            interfaceId == type(IRouter).interfaceId ||
-            interfaceId == type(IRouterState).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
@@ -162,8 +148,8 @@ contract MarketplaceV3 is
         return data._hasRole[_role][_account];
     }
 
-    /// @dev Returns whether all relevant permission and other checks are met before any upgrade.
-    function _isAuthorizedCallToUpgrade() internal view virtual override returns (bool) {
+    /// @dev Returns whether plug-in can be set in the given execution context.
+    function _canSetPlugin() internal view override returns (bool) {
         return _hasRole(EXTENSION_ROLE, msg.sender);
     }
 

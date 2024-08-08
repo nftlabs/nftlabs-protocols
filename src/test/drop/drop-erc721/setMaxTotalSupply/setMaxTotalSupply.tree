@@ -1,6 +1,0 @@
-function setMaxTotalSupply(uint256 _maxTotalSupply)
-├── when called by a user without the DEFAULT_ADMIN_ROLE
-│   └── it should revert ✅
-└── when called by a user with the DEFAULT_ADMIN_ROLE
-    ├── it should set maxTotalSupply to _maxTotalSupply ✅
-    └── it should emit MaxTotalSupplyUpdated with the following parameters: _maxTotalSupply ✅

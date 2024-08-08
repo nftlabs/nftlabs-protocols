@@ -1,6 +1,0 @@
-distribute()
-├── it should update released mapping for all payees account by respective pending payments ✅
-├── it should update total released by total pending payments ✅
-├── it should send correct pending payment amounts of native tokens to each account ✅
-├── it should reduce balance of contract by total paid in this call ✅
-          

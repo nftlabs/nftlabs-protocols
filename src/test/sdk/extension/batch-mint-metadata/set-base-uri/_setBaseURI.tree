@@ -1,6 +1,0 @@
-_setBaseURI(uint256 _batchId, string memory _baseURI)
-├── when the `_batchId` is frozen
-  │  └── it should revert ✅
-  └── when the `_batchId` is not frozen
-       └── it should map the `_batchId` to `_baseURI` param ✅
-       └── it should emit BatchMetadataUpdate event ✅

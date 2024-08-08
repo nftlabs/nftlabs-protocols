@@ -1,8 +1,0 @@
-function nextTokenIdToMint()
-└── it should return the next tokenId that is to be lazy minted ✅
-
-function contractType()
-└── it should return "DropERC1155" in bytes32 format ✅
-
-function contractVersion()
-└── it should return 4 in uint8 format ✅

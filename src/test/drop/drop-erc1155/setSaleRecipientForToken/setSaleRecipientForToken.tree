@@ -1,6 +1,0 @@
-function setSaleRecipientForToken(uint256 _tokenId, address _saleRecipient)
-├── when called by a user without DEFAULT_ADMIN_ROLE 
-│   └── it should revert ✅
-└── when called by a user with DEFAULT_ADMIN_ROLE
-    ├── it should set saleRecipient for _tokenId as _saleRecipient ✅
-    └── it should emit SaleRecipientForTokenUpdated with the parameters _tokenId, _saleRecipient ✅

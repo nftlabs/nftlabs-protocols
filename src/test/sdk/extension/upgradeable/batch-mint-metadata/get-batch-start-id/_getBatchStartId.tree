@@ -1,6 +1,0 @@
-_getBatchStartId(uint256 _batchID)
-├── when `_batchID` doesn't exist
-  │  └── it should revert ✅
-  └── when `_batchID` exists
-          └── it should return the starting tokenId for that batch ✅
-(note: all batches are assumed to be contiguous, i.e. start id of one batch is the end id of the previous batch)

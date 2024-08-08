@@ -1,8 +1,0 @@
-getRevealURI(uint256 _batchId, bytes calldata _key)
-├── when there is no encrypted data set for the given batch id
-  │  └── it should revert ✅
-  └── when there is an associated encrypted data present for the given batch id
-       ├── when the encryption key provided is incorrect
-       │  └── it should revert ✅
-       └── when the encryption key provided is correct
-          └── it should correctly decrypt and return the original URI ✅

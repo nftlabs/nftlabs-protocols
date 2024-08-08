@@ -1,6 +1,0 @@
-owner()
-├── when private variable `_owner` DEFAULT_ADMIN_ROLE
-│   └── it should return `_owner` ✅
-└── when private variable `_owner` doesn't have DEFAULT_ADMIN_ROLE
-    └── it should return address(0) ✅
-

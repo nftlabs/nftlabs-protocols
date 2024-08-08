@@ -1,8 +1,0 @@
-getActiveClaimConditionId()
-├── when no conditions are set
-  │  └── it should revert ✅
-  └── when condition(s) are set
-       ├── when no active condition, i.e. start timestamps of all conditions greater than block timestamp
-       │     └── it should revert ✅
-       └── when conditions active, i.e. start timestamps at least one condition is less than or equal to the block timestamp
-            └── it should return the latest active claim condition id (i.e. with highest start timestamp among those active) ✅

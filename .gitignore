@@ -7,7 +7,10 @@ artifacts/@openzeppelin
 artifacts/build-info
 build/
 scripts/reference-scripts
-cache*/
+cache/
+cache-zk/
+cache_hardhat-zk/
+cache_hardhat/
 coverage/
 dist/
 node_modules/
@@ -19,7 +22,7 @@ abi/
 contracts/abi/
 contracts/README.md
 artifacts/
-artifacts-*/
+artifacts-zk/
 artifacts_forge/
 contract_artifacts/
 

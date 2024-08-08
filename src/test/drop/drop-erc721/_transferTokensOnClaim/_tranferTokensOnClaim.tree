@@ -1,2 +1,0 @@
-function _transferTokensOnClaim(address _to, uint256 _quantityBeingClaimed)
-└── it should mint `_quantityBeingClaimed` number of tokens to `to` ✅
