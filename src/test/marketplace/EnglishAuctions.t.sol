@@ -1885,7 +1885,7 @@ contract MarketplaceEnglishAuctionsTest is BaseTest, IExtension {
         uint256 auctionId = _setup_newAuction();
         IEnglishAuctions.Auction memory existingAuction = EnglishAuctionsLogic(marketplace).getAuction(auctionId);
 
-        vm.warp(existingAuction.endTimestamp);
+        vm.warp(existingAuction.endTimestamp + 1);
         assertTrue(EnglishAuctionsLogic(marketplace).isAuctionExpired(auctionId));
     }
 
