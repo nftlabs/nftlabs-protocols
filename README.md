@@ -126,7 +126,11 @@ Other (smaller) blocks are Features, which provide a way for you to pick and cho
 - [Audit 10](audit-reports/audit-10.pdf)
 - [Audit 11](audit-reports/audit-11.pdf)
 - [Audit 12](audit-reports/audit-12.pdf)
-
+- [Audit 13](audit-reports/audit-13.pdf)
+- [Audit 14](audit-reports/audit-14.pdf)
+- [Audit 15](audit-reports/audit-15.pdf)
+- [Audit 18](audit-reports/audit-18.pdf)
+        
 ## Bug reports
 
 Found a security issue with our smart contracts? Send bug reports to security@thirdweb.com and we'll continue communicating with you from there. We're actively developing a bug bounty program; bug report payouts happen on a case by case basis, for now.
