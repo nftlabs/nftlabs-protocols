@@ -149,7 +149,6 @@ contract EnglishAuctionsLogic is IEnglishAuctions, ReentrancyGuard, ERC2771Conte
             !_englishAuctionsStorage().payoutStatus[_auctionId].paidOutBidAmount,
             "Marketplace: payout already completed."
         );
-        _englishAuctionsStorage().payoutStatus[_auctionId].paidOutBidAmount = true;
 
         Auction memory _targetAuction = _englishAuctionsStorage().auctions[_auctionId];
         Bid memory _winningBid = _englishAuctionsStorage().winningBid[_auctionId];
@@ -157,6 +156,8 @@ contract EnglishAuctionsLogic is IEnglishAuctions, ReentrancyGuard, ERC2771Conte
         require(_targetAuction.status != IEnglishAuctions.Status.CANCELLED, "Marketplace: invalid auction.");
         require(_targetAuction.endTimestamp <= block.timestamp, "Marketplace: auction still active.");
         require(_winningBid.bidder != address(0), "Marketplace: no bids were made.");
+
+        _englishAuctionsStorage().payoutStatus[_auctionId].paidOutBidAmount = true;
 
         _closeAuctionForAuctionCreator(_targetAuction, _winningBid);
 
