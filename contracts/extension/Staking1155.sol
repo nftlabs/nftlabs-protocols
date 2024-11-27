@@ -20,7 +20,7 @@ abstract contract Staking1155 is ReentrancyGuard, IStaking1155 {
     /// @dev Flag to check direct transfers of staking tokens.
     uint8 internal isStaking = 1;
 
-    ///@dev Next staking condition Id. Tracks number of conditon updates so far.
+    ///@dev Next staking condition Id. Tracks number of condition updates so far.
     uint64 private nextDefaultConditionId;
 
     ///@dev List of token-ids ever staked.
