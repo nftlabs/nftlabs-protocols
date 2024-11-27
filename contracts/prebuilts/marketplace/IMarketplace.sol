@@ -160,23 +160,6 @@ interface IDirectListings {
     ) external;
 
     /**
-     *  @notice Buy NFTs from a listing.
-     *
-     *  @param _listingId The ID of the listing to update.
-     *  @param _buyFor The recipient of the NFTs being bought.
-     *  @param _quantity The quantity of NFTs to buy from the listing.
-     *  @param _currency The currency to use to pay for NFTs.
-     *  @param _expectedTotalPrice The expected total price to pay for the NFTs being bought.
-     */
-    function buyFromListing(
-        uint256 _listingId,
-        address _buyFor,
-        uint256 _quantity,
-        address _currency,
-        uint256 _expectedTotalPrice
-    ) external payable;
-
-    /**
      *  @notice Returns the total number of listings created.
      *  @dev At any point, the return value is the ID of the next listing created.
      */

@@ -52,6 +52,7 @@
     "prettier:list-different": "prettier --config .prettierrc --plugin=prettier-plugin-solidity --list-different '**/*.sol'",
     "prettier:contracts": "prettier --config .prettierrc --plugin=prettier-plugin-solidity --list-different '{contracts,src}/**/*.sol'",
     "test": "forge test",
+    "coverage_mintra": "forge coverage --match-contract MintraDirectListingsLogicStandaloneTest --report lcov && genhtml lcov.info --output-dir coverage",
     "typechain": "typechain --target ethers-v5 --out-dir ./typechain artifacts_forge/**/*.json",
     "build": "yarn clean && yarn compile",
     "forge:build": "forge build",
