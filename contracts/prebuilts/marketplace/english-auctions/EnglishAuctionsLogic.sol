@@ -156,7 +156,7 @@ contract EnglishAuctionsLogic is IEnglishAuctions, ReentrancyGuard, ERC2771Conte
 
         require(_targetAuction.status != IEnglishAuctions.Status.CANCELLED, "Marketplace: invalid auction.");
         require(_targetAuction.endTimestamp <= block.timestamp, "Marketplace: auction still active.");
-        require(_winningBid.bidder != address(0), "Marketplace: no bids were made.");
+        require(_winningBid.bidder == _msgSender(), "Marketplace: not auction winner.");
 
         _closeAuctionForAuctionCreator(_targetAuction, _winningBid);
 

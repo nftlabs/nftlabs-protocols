@@ -487,7 +487,7 @@ The `EnglishAuctions` extension smart contract lets you sell NFTs (ERC-721 or ER
   | auctionId | The unique ID of the auction to collect the payout for. |
 - Criteria that must be satisfied
   - The auction must be expired.
-  - The caller must be the winning bidder.
+  - The caller must be the auction winner.
 
 ### `bidInAuction`
 
