@@ -79,6 +79,37 @@ contract TokenERC20Test is BaseTest {
         _signature = signMintRequest(_mintrequest, privateKey);
     }
 
+	// Edge case: Test minting with invalid signature (added to prevent minting exploit)
+    function testFailMintWithInvalidSignature() public {
+        // Trying to mint with an invalid signature should fail
+        TokenERC20.MintRequest memory mintRequest = TokenERC20.MintRequest({
+            to: address(this),
+            primarySaleRecipient: recipient,  // Use the recipient from your setup
+            quantity: 100,
+            price: 0.01 ether,
+            currency: address(0),
+            validityStartTimestamp: block.timestamp,
+            validityEndTimestamp: block.timestamp + 1 hours, // Set a valid timeframe
+            uid: bytes32(0)
+        });
+        emptySignature = ""; // No signature provided
+
+        // Expect this mint to fail due to invalid signature
+        vm.expectRevert("Invalid signature");
+        tokenContract.mintWithSignature(mintRequest, emptySignature);
+    }
+
+    // Gas efficiency check: Track gas usage for minting tokens
+    function testGasMinting() public {
+        // Measure gas consumption for minting
+        uint256 gasBefore = gasleft();
+        tokenContract.mintTo(address(this), 100);
+        uint256 gasAfter = gasleft();
+
+        uint256 gasUsed = gasBefore - gasAfter;
+        emit log_uint(gasUsed); // Log gas usage for debugging (check logs for gas consumption)
+    }
+
     function signMintRequest(
         TokenERC20.MintRequest memory _request,
         uint256 _privateKey
