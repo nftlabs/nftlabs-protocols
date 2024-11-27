@@ -73,7 +73,7 @@ abstract contract DelayedReveal is IDelayedReveal {
         assembly {
             // Set result to free memory pointer
             result := mload(0x40)
-            // Increase free memory pointer by lenght + 32
+            // Increase free memory pointer by length + 32
             mstore(0x40, add(add(result, length), 32))
             // Set result length
             mstore(result, length)
