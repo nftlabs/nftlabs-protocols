@@ -13,7 +13,6 @@ import "../../../external-deps/openzeppelin/token/ERC1155/utils/ERC1155Holder.so
 
 // Utils
 import "../../../eip/ERC1271.sol";
-import "../utils/Helpers.sol";
 import "../../../external-deps/openzeppelin/utils/cryptography/ECDSA.sol";
 import "../utils/BaseAccountFactory.sol";
 

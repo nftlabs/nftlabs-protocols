@@ -3,7 +3,7 @@ pragma solidity ^0.8.12;
 
 // Utils
 import "../utils/BaseAccountFactory.sol";
-import "../../../external-deps/openzeppelin/proxy/Clones.sol";
+import "../interfaces/IEntryPoint.sol";
 
 // Extensions
 import "../../../extension/upgradeable//PermissionsEnumerable.sol";

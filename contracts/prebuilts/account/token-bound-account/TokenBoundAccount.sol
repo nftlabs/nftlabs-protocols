@@ -18,7 +18,6 @@ import "../../../eip/ERC1271.sol";
 
 // Utils
 import "../../../external-deps/openzeppelin/utils/cryptography/ECDSA.sol";
-import "../utils/BaseAccountFactory.sol";
 
 import "./erc6551-utils/ERC6551AccountLib.sol";
 import "./erc6551-utils/IERC6551Account.sol";

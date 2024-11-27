@@ -75,7 +75,7 @@ contract AccountCore is IAccountCore, Initializable, Multicall, BaseAccount, Acc
         return entrypointContract;
     }
 
-    /** 
+    /**
     @notice Returns whether a signer is authorized to perform transactions using the account.
             Validity of the signature is based upon signer permission start/end timestamps, txn target, and txn value.
             Account admins will always return true, and signers with address(0) as the only approved target will skip target checks.
