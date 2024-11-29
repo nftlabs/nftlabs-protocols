@@ -19,7 +19,7 @@
 # Forge projects
 forge install https://github.com/thirdweb-dev/contracts
 
-# Hardhat / npm based projects
+# Hardhat / npm-based projects
 npm i @thirdweb-dev/contracts
 ```
 

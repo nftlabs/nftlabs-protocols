@@ -8,7 +8,7 @@ The document is written for technical and non-technical readers. To ask further 
 
 ## Background
 
-The [thirdweb](https://thirdweb.com/) `Marketplace V3` is a marketplace where where people can sell NFTs — [ERC 721](https://eips.ethereum.org/EIPS/eip-721) or [ERC 1155](https://eips.ethereum.org/EIPS/eip-1155) tokens — at a fixed price ( what we'll refer to as a "Direct listing"), or auction them (what we'll refer to as an "Auction listing"). It also allows users to make "Offers" on unlisted NFTs.
+The [thirdweb](https://thirdweb.com/) `Marketplace V3` is a marketplace where people can sell NFTs — [ERC 721](https://eips.ethereum.org/EIPS/eip-721) or [ERC 1155](https://eips.ethereum.org/EIPS/eip-1155) tokens — at a fixed price ( what we'll refer to as a "Direct listing"), or auction them (what we'll refer to as an "Auction listing"). It also allows users to make "Offers" on unlisted NFTs.
 
 `Marketplace V3` offers improvements over previous version in terms of design and features, which are discussed in this document. You can refer to previous (v2) `Marketplace` design document [here](https://github.com/thirdweb-dev/contracts/blob/main/contracts/prebuilts/marketplace-legacy/marketplace.md).
 
