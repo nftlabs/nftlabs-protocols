@@ -17,7 +17,7 @@ Any external party can then present a smart contract implementing the 'signature
 
 The following diagram illustrates how the 'signature minting' flow looks like. For example, consider a webapp like [wombo.art](https://www.wombo.art/) which lets a user generate artwork on its website. Once a user has generated artwork on the wombo website, wombo can allow the user to mint their generated artwork as an NFT on wombo's own contract, where wombo can ensure that what the user will mint on wombo's contract is the intended generated artwork.
 
-![signaute-minting-diagram-1.png](/assets/signature-minting-diag-1.png)
+![signature-minting-diagram-1.png](/assets/signature-minting-diag-1.png)
 
 ### Why we're developing `Signature Minting`
 
@@ -91,7 +91,7 @@ function mintWithSignature(MintRequest calldata req, bytes calldata signature) e
 | req | The payload / mint request. |
 | signature | The signature produced by an account signing the mint request. |
 
-The contract implementing the 'signature minting' mechanism first recover's the address of the signer from the given payload i.e. `req` and the `signature`, and verifies that an authorized address has signed off this incoming mint request.
+The contract implementing the 'signature minting' mechanism first recovers the address of the signer from the given payload i.e. `req` and the `signature`, and verifies that an authorized address has signed off this incoming mint request.
 
 Once verified, tokens are minted according to the information specified in the payload.
 
