@@ -14,7 +14,7 @@ abstract contract SeaportEIP1271 is SeaportOrderParser {
     bytes32 private immutable HASHED_NAME;
     bytes32 private immutable HASHED_VERSION;
 
-    /// @notice The function selector of EIP1271.isValidSignature to be returned on sucessful signature verification.
+    /// @notice The function selector of EIP1271.isValidSignature to be returned on successful signature verification.
     bytes4 public constant MAGICVALUE = 0x1626ba7e;
 
     constructor(string memory _name, string memory _version) {
